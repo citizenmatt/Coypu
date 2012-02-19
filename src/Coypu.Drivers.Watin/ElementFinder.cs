@@ -145,18 +145,23 @@ namespace Coypu.Drivers.Watin
             return Scope.Elements.First(isSection & hasLocator & isVisible);
         }
 
+        private IEnumerable<WatiN.Core.Element> FindAllCssDeferred(string cssSelector)
+        {
+            // TODO: This is restricting by scope + visibility, but there are no tests for that!
+            var isVisible = Constraints.IsVisible(ConsiderInvisibleElements);
+            return from element in Scope.Elements.Filter(Find.BySelector(cssSelector))
+                   where element.Matches(isVisible)
+                   select element;
+        }
+
         public IEnumerable<WatiN.Core.Element> FindAllCss(string cssSelector)
         {
-            // TODO: This is restricting by hidden items, but there are no tests for that!
-            var isVisible = Constraints.IsVisible(ConsiderInvisibleElements);
-            return (from element in GetDocument().Elements.Filter(Find.BySelector(cssSelector))
-                    where element.Matches(isVisible)
-                    select element).ToList();
+            return FindAllCssDeferred(cssSelector).ToList();
         }
 
         public WatiN.Core.Element FindCss(string cssSelector)
         {
-            return GetDocument().Elements.Filter(Find.BySelector(cssSelector)).First(Constraints.IsVisible(ConsiderInvisibleElements));
+            return FindAllCssDeferred(cssSelector).FirstOrDefault();
         }
 
         public bool HasCss(string cssSelector)

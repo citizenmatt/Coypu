@@ -219,11 +219,6 @@ namespace Coypu.Drivers.Watin
 
         public bool HasContentMatch(Regex pattern)
         {
-            var text = Watin.Text;
-            text = Regex.Replace(text, "(\r\n)+", "\r\n");
-
-            Console.WriteLine(text);
-
             return Scope != null
                 ? pattern.IsMatch(Scope.Text) 
                 : Watin.ContainsText(pattern);
